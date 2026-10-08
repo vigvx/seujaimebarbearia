@@ -9,6 +9,14 @@ const Interface = {
   },
   limpar(el) { while (el.firstChild) el.removeChild(el.firstChild); },
   ligarLinksZap(linkPadrao) { document.querySelectorAll("[data-zap]").forEach(a => { if (linkPadrao) a.href = linkPadrao; else a.hidden = true; }); },
+  /* Botões de agendamento online (links externos). Sem link, os botões somem. */
+  ligarLinksOnline(link, rotulo) {
+    document.querySelectorAll("[data-online]").forEach(a => {
+      if (!link) { a.hidden = true; return; }
+      a.href = link; a.target = "_blank"; a.rel = "noopener";
+      const t = a.querySelector(".botao__txt"); if (t && rotulo) t.textContent = rotulo;
+    });
+  },
   desenharSelo(estado) {
     const s = document.getElementById("seloAberto");
     if (!estado) { s.hidden = true; return; }
@@ -22,10 +30,19 @@ const Interface = {
       if (s.destaque) c.appendChild(Interface.criar("span", "card__faixa", "Destaque"));
       c.appendChild(Interface.criar("h3", "", s.nome));
       if (s.descricao) c.appendChild(Interface.criar("p", "", s.descricao));
+      if (s.extra) c.appendChild(Interface.criar("p", "card__extra", s.extra));
+      if (s.inclui && s.inclui.length) {
+        const ul = Interface.criar("ul", "card__lista");
+        s.inclui.forEach(i => ul.appendChild(Interface.criar("li", "", i)));
+        c.appendChild(ul);
+      }
       if (s.precoTexto) {
-        const p = Interface.criar("p", "card__preco", s.precoTexto);
+        const p = Interface.criar("p", "card__preco");
+        if (s.precoDeTexto) { p.setAttribute("aria-label", "De " + s.precoDeTexto + " por " + s.precoTexto); p.appendChild(Interface.criar("s", "card__de", s.precoDeTexto)); }
+        p.appendChild(document.createTextNode(s.precoTexto));
         if (s.precoSufixo) p.appendChild(Interface.criar("small", "", " " + s.precoSufixo));
         c.appendChild(p);
+        if (s.economiaTexto) c.appendChild(Interface.criar("p", "card__economia", s.economiaTexto));
       } else if (s.destaque) c.appendChild(Interface.criar("p", "card__preco", "Pergunte pelo plano"));
       if (s.duracao) c.appendChild(Interface.criar("p", "", "Duração: " + s.duracao));
       if (s.link) { const a = Interface.criar("a", "botao botao--claro", "Agendar " + s.nome.toLowerCase()); a.href = s.link; a.target = "_blank"; a.rel = "noopener"; c.appendChild(a); }
@@ -82,12 +99,69 @@ const Interface = {
       alvo.appendChild(fig);
     });
   },
-  desenharDepoimentos(lista) {
-    const sec = document.getElementById("depoimentos");
-    if (!lista.length) { sec.hidden = true; return; }
-    sec.hidden = false;
+  /* g = { notaTexto, quantidadeTexto, link, linkAvaliar } vindo pronto da regra. */
+  desenharDepoimentos(lista, g) {
+    g = g || {};
+    const sec = document.getElementById("depoimentos"), nota = document.getElementById("notaGoogle");
+    const temNota = !!(g.notaTexto || g.linkAvaliar);
+    if (!lista.length && !temNota) { sec.hidden = true; return; }
+    sec.hidden = false; Interface.limpar(nota); nota.hidden = !temNota;
+    if (g.notaTexto) {
+      const e = Interface.criar("span", "nota-google__estrelas", "★★★★★"); e.setAttribute("aria-hidden", "true"); nota.appendChild(e);
+      nota.appendChild(Interface.criar("strong", "", g.notaTexto + " no Google"));
+      if (g.quantidadeTexto) nota.appendChild(Interface.criar("span", "", "· " + g.quantidadeTexto));
+    }
+    [[g.link, "Ver avaliações"], [g.linkAvaliar, "Avalie a gente"]].forEach(([url, txt]) => {
+      if (!url) return; const a = Interface.criar("a", "nota-google__link", txt); a.href = url; a.target = "_blank"; a.rel = "noopener"; nota.appendChild(a);
+    });
     const alvo = document.getElementById("listaDepoimentos"); Interface.limpar(alvo);
-    lista.forEach(d => { const c = Interface.criar("blockquote", "card"); c.appendChild(Interface.criar("p", "", d.texto)); if (d.nome) c.appendChild(Interface.criar("p", "", "— " + d.nome)); alvo.appendChild(c); });
+    lista.forEach(d => {
+      const c = Interface.criar("blockquote", "card"); c.appendChild(Interface.criar("p", "", d.texto));
+      if (d.nome) c.appendChild(Interface.criar("p", "", "— " + d.nome + (d.origem ? " · " + d.origem : "")));
+      alvo.appendChild(c);
+    });
+  },
+  desenharFaq(lista) {
+    const sec = document.getElementById("duvidas"), alvo = document.getElementById("listaFaq"); Interface.limpar(alvo);
+    if (!lista.length) { sec.hidden = true; return; }
+    lista.forEach(f => {
+      const d = Interface.criar("details", "faq__item");
+      d.appendChild(Interface.criar("summary", "", f.pergunta)); d.appendChild(Interface.criar("p", "", f.resposta));
+      alvo.appendChild(d);
+    });
+  },
+  desenharAviso(a) {
+    const el = document.getElementById("aviso"); Interface.limpar(el);
+    if (!a || !a.texto) { el.hidden = true; return; }
+    el.hidden = false;
+    if (a.link) { const l = Interface.criar("a", "", a.texto); l.href = a.link; l.target = "_blank"; l.rel = "noopener"; el.appendChild(l); } else el.textContent = a.texto;
+  },
+  desenharFachada(f) {
+    const fig = document.getElementById("fachada"); Interface.limpar(fig);
+    if (!f || !f.arquivo) { fig.hidden = true; return; }
+    fig.hidden = false;
+    const img = document.createElement("img");
+    img.src = f.arquivo; img.alt = f.alt || "Fachada da Seu Jaime Barbearia"; img.loading = "lazy"; img.decoding = "async";
+    if (f.largura) img.width = f.largura; if (f.altura) img.height = f.altura;
+    fig.appendChild(img); fig.appendChild(Interface.criar("figcaption", "", "Nossa fachada"));
+  },
+  desenharAgendador(servicos, barbeiros, quandos) {
+    const grupo = document.getElementById("agendador");
+    if (!servicos.length) { grupo.hidden = true; return; }
+    const encher = (id, primeiro, itens) => {
+      const sel = document.getElementById(id); Interface.limpar(sel);
+      const op = (v, t) => { const o = document.createElement("option"); o.value = v; o.textContent = t; sel.appendChild(o); };
+      op("", primeiro); itens.forEach(i => op(i, i));
+      sel.closest("label").hidden = !itens.length;
+    };
+    encher("selServico", "Escolha o serviço", servicos);
+    encher("selBarbeiro", "Qualquer barbeiro", barbeiros);
+    encher("selQuando", "Quando você prefere?", quandos);
+  },
+  ligarAgendador(aoMudar) {
+    const ids = ["selServico", "selBarbeiro", "selQuando"];
+    const ler = () => ({ servico: document.getElementById(ids[0]).value, barbeiro: document.getElementById(ids[1]).value, quando: document.getElementById(ids[2]).value });
+    ids.forEach(id => document.getElementById(id).addEventListener("change", () => aoMudar(ler())));
   },
   desenharHorarios(linhas, funcionamento) {
     const alvo = document.getElementById("blocoHorarios"); Interface.limpar(alvo);
@@ -129,7 +203,7 @@ const Interface = {
       const el = i.target; Interface.observador.unobserve(el); el.classList.add("visivel");
       setTimeout(() => { el.classList.remove("revelar", "visivel"); el.style.removeProperty("--atraso"); }, 900);
     }), { threshold: 0.1, rootMargin: "0px 0px -2px 0px" });
-    const alvos = (escopo || document).querySelectorAll(".hero__titulo,.hero__sub,.hero .botao,.secao__titulo,.divisor,.sobre__intro,.filtros,.card,.foto,.convite,.local>*,.chamada>*,.rodape>*");
+    const alvos = (escopo || document).querySelectorAll(".hero__titulo,.hero__sub,.hero .botao,.secao__titulo,.divisor,.sobre__intro,.filtros,.card,.foto,.convite,.local>*,.faq__item,.nota-google,.agendador,.chamada>*,.rodape>*");
     alvos.forEach(el => {
       if (el.dataset.revelar) return; el.dataset.revelar = "1";
       const pos = el.parentElement ? Array.prototype.indexOf.call(el.parentElement.children, el) : 0;
