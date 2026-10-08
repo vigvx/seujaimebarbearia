@@ -1,16 +1,29 @@
 /* ARQUIVO: MAESTRO. Lê conteudo.js, chama regras.js, manda interface.js desenhar e liga os eventos. */
 (function () {
   const c = CONTEUDO;
-  const msg = s => Regras.mensagemAgendar(c.nome, s);
-  const zap = s => Regras.linkWhatsapp(c.whatsapp, msg(s));
+  const fmt = Regras.formatarMoeda;
+  const zap = d => Regras.linkWhatsapp(c.whatsapp, Regras.mensagemAgendar(c.nome, d));
+  const base = c.servicos || [];
 
-  Interface.ligarLinksZap(zap(""));
+  Interface.desenharAviso(c.aviso);
+  Interface.ligarLinksZap(zap({}));
+  Interface.ligarLinksOnline(c.agendamentoOnline && c.agendamentoOnline.link, c.agendamentoOnline && c.agendamentoOnline.rotulo);
   Interface.desenharContatos(Regras.formatarTelefone(c.whatsapp), c.instagram, c.instagramUsuario);
 
-  const servicos = (c.servicos || []).map(s => Object.assign({}, s, {
-    precoTexto: s.preco ? Regras.formatarMoeda(s.preco) : "",
-    link: zap(s.nome.toLowerCase() === "plano mensal" ? "o Plano Mensal" : "um " + s.nome.toLowerCase())
-  }));
+  const servicos = base.map(s => {
+    const soma = s.compoe ? Regras.somaPrecos(s.compoe, base) : 0;
+    const ref = s.comparaCom ? base.find(x => x.id === s.comparaCom) : null;
+    const n = ref ? Regras.cortesParaCompensar(s.preco, ref.preco) : 0;
+    const combo = s.preco && soma > s.preco;
+    return Object.assign({}, s, {
+      precoTexto: s.preco ? fmt(s.preco) : "",
+      precoDeTexto: combo ? fmt(soma) : "",
+      economiaTexto: combo ? "Economize " + fmt(soma - s.preco) : "",
+      extra: n > 1 ? "Se paga com " + n + " cortes no mês." : "",
+      inclui: s.compoe ? s.compoe.map(id => (base.find(x => x.id === id) || {}).nome).filter(Boolean) : s.inclui,
+      link: zap({ servico: s.nome })
+    });
+  });
   Interface.desenharServicos(servicos);
   Interface.desenharSobre(c.sobre, c.equipe || []);
 
@@ -24,7 +37,15 @@
   };
   let pronto = false;
   pintarGaleria();
-  Interface.desenharDepoimentos(c.depoimentos || []);
+
+  const g = c.google || {};
+  Interface.desenharDepoimentos(c.depoimentos || [], {
+    notaTexto: g.nota ? Regras.formatarNota(g.nota) : "",
+    quantidadeTexto: g.nota && g.quantidade ? Regras.textoAvaliacoes(g.quantidade) : "",
+    link: g.link, linkAvaliar: g.linkAvaliar
+  });
+  const faq = Regras.montarFaq(c);
+  Interface.desenharFaq(faq);
 
   const hoje = new Date().getDay();
   const linhas = Regras.temHorarios(c.horarios) ? [1, 2, 3, 4, 5, 6, 0].map(d => ({
@@ -36,7 +57,13 @@
   Interface.desenharFuncionamentoRodape(funcionamento);
   Interface.desenharSelo(Regras.estadoAgora(c.horarios, new Date()));
   Interface.desenharLocal(Regras.enderecoTexto(c.endereco), Regras.linkMapa(c.endereco));
+  Interface.desenharFachada(c.fachada);
+
+  Interface.desenharAgendador(base.map(s => s.nome), (c.equipe || []).map(p => p.nome), (c.agendamento && c.agendamento.quando) || []);
+  Interface.ligarAgendador(d => { const l = zap(d); if (l) document.getElementById("botaoAgendar").href = l; });
+
   Interface.injetarJsonLd(Regras.jsonLd(c));
+  if (faq.length) Interface.injetarJsonLd(Regras.jsonLdFaq(faq));
   Interface.ligarMenu();
   Interface.ligarDestaque();
   Interface.ligarRevelar();
