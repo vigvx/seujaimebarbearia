@@ -1,0 +1,56 @@
+/* ARQUIVO: layout de cada seção e responsividade (mobile-first). */
+.topo{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;padding:.5rem var(--espaco);background:var(--amarelo);border-bottom:3px double var(--preto)}
+.topo__marca{display:flex;align-items:center;gap:.5rem;text-decoration:none;font-size:1.5rem;margin-right:auto}
+.topo__marca img{border-radius:50%}
+.topo__zap{display:none}
+.menu{display:none;width:100%;flex-direction:column;padding-bottom:.5rem}
+.menu.aberto{display:flex}
+.hero{background:var(--amarelo);text-align:center;padding:1rem var(--espaco) 2.5rem;display:flex;flex-direction:column;align-items:center}
+.hero__logo{width:min(220px,60vw);height:auto;border-radius:50%;margin-bottom:.75rem;animation:entrada .9s ease-out both}
+@keyframes entrada{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+.hero__titulo{font-size:clamp(1.5rem,6vw,2.75rem);max-width:18ch;margin-bottom:.75rem}
+.hero__sub{font-weight:700;margin-bottom:1.5rem}
+.secao{padding:3.5rem var(--espaco)}
+.secao>*{max-width:1080px;margin-left:auto;margin-right:auto}
+.secao--preta{background:var(--preto);color:var(--branco)}
+.secao--branca{background:var(--branco)}
+.secao--cinza{background:var(--cinza);color:var(--branco)}
+.secao--amarela{background:var(--amarelo)}
+.secao__titulo{font-size:clamp(1.25rem,4vw,1.75rem);text-align:center}
+.divisor{width:64px;height:64px;margin-top:1rem!important;margin-bottom:1.5rem!important;position:relative;height:20px}
+.divisor::before{content:"";position:absolute;left:50%;top:2px;width:14px;height:14px;background:var(--amarelo-escuro);transform:translateX(-50%) rotate(45deg)}
+.secao--amarela .divisor::before,.secao--cinza .divisor::before{background:var(--preto)}
+.secao--cinza .divisor::before{background:var(--amarelo)}
+.cards{display:grid;gap:1.5rem;grid-template-columns:1fr}
+.sobre__intro{max-width:62ch;text-align:center;margin:0 auto 1.5rem}
+.grade{display:grid;gap:1rem;grid-template-columns:1fr 1fr}
+.foto{margin:0;border:3px solid var(--amarelo);border-radius:var(--raio);overflow:hidden;background:var(--preto)}
+.foto img{width:100%;aspect-ratio:4/5;object-fit:cover}
+.foto figcaption{padding:.4rem .75rem;font-size:.85rem;font-weight:700;background:var(--preto);color:var(--branco);overflow-wrap:anywhere}
+.foto--pessoa figcaption{display:flex;flex-direction:column;gap:.15rem;padding:.75rem}
+.foto__nome{font-family:var(--fonte-titulo);text-transform:uppercase;letter-spacing:.08em;font-size:.9rem}
+.foto__cargo{color:var(--amarelo)}
+.foto__desc{font-weight:400}
+.foto__vazia{aspect-ratio:4/5;display:grid;place-items:center;background:var(--amarelo);color:var(--preto);font-size:clamp(4rem,22vw,6.5rem);line-height:1}
+.convite{grid-column:1/-1;text-align:center;border:3px double var(--amarelo);border-radius:var(--raio);padding:2rem 1rem}
+.local{display:grid;gap:2rem;grid-template-columns:1fr}
+.local address{font-style:normal;font-weight:700;font-size:1.15rem;margin-bottom:1rem}
+.chamada{background:var(--preto);color:var(--branco);text-align:center;padding:3.5rem var(--espaco)}
+.chamada__titulo{font-size:clamp(1.25rem,5vw,2rem);margin-bottom:1rem}
+.chamada__texto{margin:0 auto 1.5rem;color:#E4E4E6}
+.chamada__titulo .script{color:var(--amarelo);font-size:1.5em}
+.rodape{background:var(--amarelo);text-align:center;padding:2rem var(--espaco) 5rem;border-top:3px double var(--preto)}
+.rodape__nome{font-size:2rem;margin:0 0 .5rem}
+.rodape p{margin:.25rem 0}
+@media (min-width:768px){
+  .menu-botao{display:none}
+  .topo__zap{display:inline-block}
+  .menu{display:flex!important;flex-direction:row;width:auto;gap:1.25rem;padding:0;order:2}
+  .topo__zap{order:3}
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .grade{grid-template-columns:repeat(3,1fr)}
+  .local{grid-template-columns:1fr 1fr;align-items:start}
+  .rodape{padding-bottom:2rem}
+}
+@media (min-width:1100px){.cards{grid-template-columns:repeat(3,1fr)}#listaServicos{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:400px){.grade{gap:.75rem}.card{padding:1.25rem}.foto figcaption{font-size:.8rem}}
