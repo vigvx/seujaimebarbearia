@@ -334,9 +334,6 @@
     grid-template-columns: repeat(3, 1fr)
   }
 
-  #listaServicos {
-    grid-template-columns: repeat(4, 1fr)
-  }
 }
 
 @media (max-width:400px) {
@@ -350,5 +347,197 @@
 
   .foto figcaption {
     font-size: .8rem
+  }
+}
+/* Serviços: linhas centralizadas (5 cards = 3 + 2 no desktop, 2 + 2 + 1 no tablet) */
+@media (min-width:768px) {
+  #listaServicos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center
+  }
+
+  #listaServicos>.card {
+    flex: 0 1 calc((100% - 1.5rem) / 2)
+  }
+}
+
+@media (min-width:1100px) {
+  #listaServicos>.card {
+    flex-basis: calc((100% - 3rem) / 3)
+  }
+}
+
+/* Aviso/promoção no topo */
+.aviso {
+  background: var(--preto);
+  color: var(--amarelo);
+  text-align: center;
+  font-weight: 700;
+  font-size: .9rem;
+  padding: .55rem var(--espaco)
+}
+
+.aviso a {
+  text-underline-offset: 4px
+}
+
+/* Avaliações */
+.nota-google {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1rem;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.5rem
+}
+
+.nota-google__estrelas {
+  color: var(--amarelo);
+  letter-spacing: .15em
+}
+
+.nota-google__link {
+  color: var(--amarelo);
+  font-weight: 700;
+  text-underline-offset: 4px
+}
+
+#listaDepoimentos blockquote {
+  margin: 0
+}
+
+/* Dúvidas frequentes */
+.faq {
+  display: grid;
+  gap: .75rem;
+  max-width: 760px
+}
+
+.faq__item {
+  background: var(--preto);
+  color: var(--branco);
+  border: 3px solid var(--amarelo);
+  border-radius: var(--raio);
+  overflow: hidden
+}
+
+.faq__item summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  min-height: 52px;
+  padding: .75rem 1.25rem;
+  font-weight: 700
+}
+
+.faq__item summary::-webkit-details-marker {
+  display: none
+}
+
+.faq__item summary::after {
+  content: "+";
+  color: var(--amarelo);
+  font-size: 1.5rem;
+  line-height: 1;
+  flex: none
+}
+
+.faq__item[open] summary::after {
+  content: "–"
+}
+
+.faq__item p {
+  margin: 0;
+  padding: 0 1.25rem 1.1rem;
+  color: #D9D9DB
+}
+
+/* Fachada */
+.fachada {
+  width: 100%;
+  max-width: 420px
+}
+
+.fachada img {
+  aspect-ratio: 4/3
+}
+
+/* Monte sua mensagem */
+.agendador {
+  display: grid;
+  gap: .75rem;
+  max-width: 760px;
+  margin: 0 auto 1.5rem;
+  text-align: left
+}
+
+.agendador__titulo {
+  margin: 0;
+  text-align: center;
+  font-size: .9rem;
+  color: #E4E4E6
+}
+
+.agendador label {
+  display: grid;
+  gap: .35rem;
+  font-size: .75rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--amarelo)
+}
+
+.agendador select {
+  width: 100%;
+  min-height: 48px;
+  padding: .7rem .9rem;
+  font: 500 1rem var(--fonte-corpo);
+  color: var(--branco);
+  background: var(--preto);
+  border: 3px solid var(--amarelo);
+  border-radius: var(--raio)
+}
+
+.agendador option {
+  background: var(--preto);
+  color: var(--branco)
+}
+
+.rodape__privacidade {
+  font-size: .8rem;
+  margin-top: .75rem !important
+}
+
+@media (min-width:768px) {
+  .agendador {
+    grid-template-columns: repeat(3, 1fr)
+  }
+
+  .agendador__titulo {
+    grid-column: 1/-1
+  }
+}
+
+/* Tablet: mantém o topo em uma linha só */
+@media (min-width:768px) and (max-width:960px) {
+  .topo {
+    gap: .6rem
+  }
+
+  .topo__marca .script {
+    display: none
+  }
+
+  .menu {
+    gap: .75rem
+  }
+
+  .menu a {
+    font-size: .9rem
   }
 }
