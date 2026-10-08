@@ -230,9 +230,18 @@
 }
 
 .local {
-  display: grid;
-  gap: 2rem;
-  grid-template-columns: 1fr
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+}
+
+.local > div:not(.funcionamento) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 1rem;
 }
 
 .local address {
