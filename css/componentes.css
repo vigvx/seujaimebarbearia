@@ -357,3 +357,80 @@
     min-height: 55px;
     margin-top: -27px;
 }
+/* Cards de serviço: lista do que inclui, preço "de/por" e economia */
+.card__lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: .4rem
+}
+
+.card__lista li {
+    display: flex;
+    gap: .55rem;
+    color: #D9D9DB;
+    transition: color .4s ease
+}
+
+.card__lista li::before {
+    content: "";
+    flex: none;
+    width: .5rem;
+    height: .5rem;
+    margin-top: .6rem;
+    background: var(--d-preco, var(--amarelo));
+    transform: rotate(45deg);
+    transition: background-color .4s ease
+}
+
+.card--destaque .card__lista li {
+    color: var(--d-texto)
+}
+
+.card .card__extra,
+.card .card__economia {
+    font-weight: 700;
+    color: var(--d-preco, var(--amarelo))
+}
+
+.card .card__economia {
+    font-size: .8rem
+}
+
+.card__de {
+    font-size: .95rem;
+    font-weight: 700;
+    opacity: .85;
+    margin-right: .5rem
+}
+
+/* Botões de agendamento lado a lado (WhatsApp + online) */
+.acoes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .75rem
+}
+
+.botao--contorno {
+    background: transparent;
+    color: var(--preto);
+    border-color: var(--preto)
+}
+
+.botao--contorno:hover {
+    background: var(--preto);
+    color: var(--amarelo)
+}
+
+.botao--contorno-claro {
+    background: transparent;
+    color: var(--amarelo);
+    border-color: var(--amarelo)
+}
+
+.botao--contorno-claro:hover {
+    background: var(--amarelo);
+    color: var(--preto)
+}
