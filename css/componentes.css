@@ -268,16 +268,20 @@
     border-color: var(--amarelo)
 }
 
-.funcionamento {
-    display: flex;
-    flex-direction: column;
-    gap: .25rem;
-    background: var(--preto);
-    color: var(--branco);
-    border: 3px solid var(--preto);
-    border-radius: var(--raio);
-    padding: 1.25rem 1.5rem;
-    margin: 0
+.funcionamento{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:.25rem;
+    background:var(--preto);
+    color:var(--branco);
+    border:3px solid var(--preto);
+    border-radius:var(--raio);
+    padding:1.25rem 1.5rem;
+    margin:0;
+    text-align:center;
+     width: min(500px, 100%);
 }
 
 .funcionamento__rotulo {
@@ -345,4 +349,11 @@
 .js .revelar.visivel {
     opacity: 1;
     transform: none
+}
+
+#botaoMapa {
+    padding: 1.2rem 2.5rem;
+    font-size: 1rem;
+    min-height: 55px;
+    margin-top: -27px;
 }
